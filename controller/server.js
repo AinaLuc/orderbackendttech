@@ -88,6 +88,8 @@ app.post('/save-email', async (req, res) => {
   try {
     const { email } = req.body;
 
+    console.log('email',email)
+
     // Save the email to the client collection
     const newClient = new Client({ email });
     const savedClient = await newClient.save();
