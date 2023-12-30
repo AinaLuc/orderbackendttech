@@ -92,6 +92,8 @@ app.post('/save-email', async (req, res) => {
 
     // Save the email to the client collection
     const newClient = new Client({ email });
+    console.log('newClient:', newClient);
+
     const savedClient = await newClient.save();
 
     // Return the client ID
