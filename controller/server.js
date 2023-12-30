@@ -18,6 +18,65 @@ mongoose.connect('mongodb://localhost:27017/test', {
   useUnifiedTopology: true,
 });
 
+// error mongo 
+
+const mongoose = require('mongoose');
+
+// Connect to MongoDB
+mongoose.connect('mongodb://localhost:27017/test', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
+
+// Event: Error during connection
+mongoose.connection.on('error', (error) => {
+  console.error('MongoDB connection error:', error);
+});
+
+// Event: Disconnected from MongoDB
+mongoose.connection.on('disconnected', () => {
+  console.warn('Disconnected from MongoDB');
+});
+
+// Event: Connected to MongoDB
+mongoose.connection.on('connected', () => {
+  console.log('Connected to MongoDB');
+});
+
+// Event: Connection successfully opened
+mongoose.connection.once('open', () => {
+  console.log('MongoDB connection is open');
+});
+
+// Event: Connection closed
+mongoose.connection.on('close', () => {
+  console.log('MongoDB connection closed');
+});
+
+// Event: Connection is successfully established
+mongoose.connection.on('connected', () => {
+  console.log('Connected to MongoDB');
+});
+
+// Event: Connection error
+mongoose.connection.on('error', (err) => {
+  console.error('MongoDB connection error:', err);
+});
+
+// Event: Connection disconnected
+mongoose.connection.on('disconnected', () => {
+  console.warn('Disconnected from MongoDB');
+});
+
+// Close the connection when the Node process is terminated
+process.on('SIGINT', () => {
+  mongoose.connection.close(() => {
+    console.log('MongoDB connection disconnected through app termination');
+    process.exit(0);
+  });
+});
+
+
 // Middleware to parse JSON requests
 app.use(bodyParser.json());
 app.use(cors()); 
