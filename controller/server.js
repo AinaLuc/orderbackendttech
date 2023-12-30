@@ -26,45 +26,7 @@ mongoose.connect('mongodb://127.0.0.1:27017/?directConnection=true&serverSelecti
     console.error('MongoDB connection error:', error);
   });
 
-// Event: Error during connection
-mongoose.connection.on('error', (error) => {
-  console.error('MongoDB connection error:', error);
-});
 
-// Event: Disconnected from MongoDB
-mongoose.connection.on('disconnected', () => {
-  console.warn('Disconnected from MongoDB');
-});
-
-// Event: Connected to MongoDB
-mongoose.connection.on('connected', () => {
-  console.log('Connected to MongoDB');
-});
-
-// Event: Connection successfully opened
-mongoose.connection.once('open', () => {
-  console.log('MongoDB connection is open');
-});
-
-// Event: Connection closed
-mongoose.connection.on('close', () => {
-  console.log('MongoDB connection closed');
-});
-
-// Event: Connection is successfully established
-mongoose.connection.on('connected', () => {
-  console.log('Connected to MongoDB');
-});
-
-// Event: Connection error
-mongoose.connection.on('error', (err) => {
-  console.error('MongoDB connection error:', err);
-});
-
-// Event: Connection disconnected
-mongoose.connection.on('disconnected', () => {
-  console.warn('Disconnected from MongoDB');
-});
 
 // Close the connection when the Node process is terminated
 process.on('SIGINT', () => {
