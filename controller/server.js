@@ -12,11 +12,7 @@ const stripe = require('stripe')('sk_test_51MnMGrE1uOh1UBiwR33jjaAaUJGqPep8bZdYY
 const mongoose = require('mongoose');
 
 
-// Connect to MongoDB
-mongoose.connect('mongodb://localhost:27017/test', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+
 
 // error mongo 
 
