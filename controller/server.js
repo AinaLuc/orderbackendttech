@@ -22,13 +22,13 @@ mongoose.connect('mongodb://localhost:27017/test', {
 
 
 // Connect to MongoDB
-mongoose.connect('mongodb://localhost:27017/test', (error) => {
-  if (error) {
-    console.error('MongoDB connection error:', error);
-  } else {
+mongoose.connect('mongodb://localhost:27017/test')
+  .then(() => {
     console.log('Connected to MongoDB');
-  }
-});
+  })
+  .catch((error) => {
+    console.error('MongoDB connection error:', error);
+  });
 
 // Event: Error during connection
 mongoose.connection.on('error', (error) => {
