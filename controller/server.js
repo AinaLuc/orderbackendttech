@@ -9,6 +9,7 @@ const Client = require('../models/client');
 const Business = require('../models/business');
 const cors = require('cors');
 const stripe = require('stripe')('sk_test_51MnMGrE1uOh1UBiwR33jjaAaUJGqPep8bZdYY90kGojhcxLowwgG5PJ7DuvHMHLPLrhO5kIafevZ99pvVQqBowfa00ikam1umE');
+const mongoose = require('mongoose');
 
 
 // Connect to MongoDB
@@ -19,7 +20,6 @@ mongoose.connect('mongodb://localhost:27017/test', {
 
 // error mongo 
 
-const mongoose = require('mongoose');
 
 // Connect to MongoDB
 mongoose.connect('mongodb://localhost:27017/test', {
