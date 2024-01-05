@@ -1,9 +1,4 @@
 {
-<<<<<<< HEAD
-  "dependencies": {
-    "cors": "^2.8.5",
-    "express": "^4.17.1",
-=======
   "name": "controller",
   "version": "1.0.0",
   "main": "server.js",
@@ -19,7 +14,6 @@
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
     "express": "^4.18.2",
->>>>>>> 83810716fa0cab5edb76053642bb55dac0bed855
     "mongoose": "^8.0.3",
     "stripe": "^14.10.0"
   }
