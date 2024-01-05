@@ -7,10 +7,9 @@ WORKDIR /usr/src/app
 # Copy package.json and package-lock.json to the working directory
 COPY package*.json ./
 
-# Install app dependencies
-RUN npm install
-RUN apt-get update && apt-get install -y mongodb-clients
-
+# Use the official MongoDB image
+# This includes the MongoDB tools, including the shell
+FROM mongo:4.4
 
 
 # Expose the port the app runs on
