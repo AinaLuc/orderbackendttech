@@ -5,8 +5,8 @@ const app = express();
 const port = 3000;
 
 // Import models
-const Client = require('../models/client');
-const Business = require('../models/business');
+const Client = require('./models/client');
+const Business = require('./models/business');
 const cors = require('cors');
 const stripe = require('stripe')('sk_test_51MnMGrE1uOh1UBiwR33jjaAaUJGqPep8bZdYY90kGojhcxLowwgG5PJ7DuvHMHLPLrhO5kIafevZ99pvVQqBowfa00ikam1umE');
 const mongoose = require('mongoose');
