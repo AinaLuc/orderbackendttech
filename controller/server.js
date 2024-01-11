@@ -71,8 +71,8 @@ cron.schedule('*/5 * * * *', async () => {
       businessId: { $exists: false },
       firstEmail: { $exists: false }, // Users who haven't received the first email
 
-      //createdAt: { $lt: new Date(Date.now() - 3 * 60 * 60 * 1000) },
-      createdAt: { $lt: new Date(Date.now() - 3 * 60 * 1000) }
+      //send email after 24 hours
+      createdAt: { $lt: new Date(Date.now() - 24 * 60 * 60 * 1000) },
 
     });
 
