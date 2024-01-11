@@ -1,0 +1,46 @@
+<!-- trackingData.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Tracking Data</title>
+    <!-- Add your custom styles or external stylesheet links here -->
+</head>
+
+<body>
+    <header>
+        <h1>Email Tracking Data</h1>
+    </header>
+
+    <main>
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Email</th>
+                    <th>Action</th>
+                    <th>Email Title</th>
+                    <th>Timestamp</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% trackingData.forEach(event => { %>
+                    <tr>
+                        <td><%= event.email %></td>
+                        <td><%= event.action %></td>
+                        <td><%= event.emailTitle %></td>
+                        <td><%= event.createdAt %></td>
+                    </tr>
+                <% }); %>
+            </tbody>
+        </table>
+    </main>
+
+    <footer>
+        <p>Best Regards,</p>
+        <p>Your Email Tracking Team</p>
+    </footer>
+</body>
+
+</html>

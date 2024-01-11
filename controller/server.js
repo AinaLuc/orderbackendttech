@@ -1,15 +1,29 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const cron = require('node-cron'); // Import the cron module
+
 
 const app = express();
 const port = 3000;
+const path = require('path'); // Add this line to import the path module
+
+const fs = require('fs');
+const ejs = require('ejs');
+
 
 // Import models
 const Client = require('./models/client');
 const Business = require('./models/business');
+// Add this line at the top of your server file
+const TrackingEvent = require('./models/trackingEvent');
+
 const cors = require('cors');
 const stripe = require('stripe')('sk_test_51MnMGrE1uOh1UBiwR33jjaAaUJGqPep8bZdYY90kGojhcxLowwgG5PJ7DuvHMHLPLrhO5kIafevZ99pvVQqBowfa00ikam1umE');
+const EmailService = require('./emailService');
+
 const mongoose = require('mongoose');
+require('dotenv').config();
+
 
 
 
@@ -17,8 +31,13 @@ const mongoose = require('mongoose');
 // error mongo 
 
 
+// Define the MongoDB connection string based on the environment
+const mongoConnectionString = process.env.NODE_ENV === 'production'
+  ? process.env.MONGODB_PROD_URI
+  : process.env.MONGODB_DEV_URI;
+
 // Connect to MongoDB
-mongoose.connect('mongodb://10.0.0.4:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+2.1.1')
+mongoose.connect(mongoConnectionString)
   .then(() => {
     console.log('Connected to MongoDB');
   })
@@ -40,6 +59,96 @@ process.on('SIGINT', () => {
 // Middleware to parse JSON requests
 app.use(bodyParser.json());
 app.use(cors()); 
+app.use(express.static(path.join(__dirname, 'public')));
+
+
+// Cron job to check user status every 10 minutes
+//cron.schedule('*/10 * * * *', async () => {
+cron.schedule('*/5 * * * *', async () => {
+  try {
+    const usersToRelance = await Client.find({
+      hasPaid: false,
+      businessId: { $exists: false },
+      firstEmail: { $exists: false }, // Users who haven't received the first email
+
+      //createdAt: { $lt: new Date(Date.now() - 3 * 60 * 60 * 1000) },
+      createdAt: { $lt: new Date(Date.now() - 3 * 60 * 1000) }
+
+    });
+
+    console.log('Users to Relance:', usersToRelance);
+
+    for (const user of usersToRelance) {
+      console.log('Sending relance email to user:', user.email);
+      await EmailService.sendRelanceEmail(user.email, user._id);
+      // Update the firstEmail field to true after sending the email
+      await Client.findByIdAndUpdate(user._id, { $set: { firstEmail: true } });
+    
+    }
+  } catch (error) {
+    console.error('Error in relance cron job:', error);
+  }
+});
+
+
+
+// Cron job to send follow-up email after 2 days
+//cron.schedule('0 0 */2 * *', async () => {
+cron.schedule('*/10 * * * *', async () => {
+    try {
+        const usersToFollowUp = await Client.find({
+            hasPaid: false,
+            firstEmail: { $exists: true },
+            createdAt: { $lt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000) },
+        });
+
+        for (const user of usersToFollowUp) {
+            const businessDetails = await Business.findOne({ _id: user.businessId });
+            await EmailService.sendFollowUpEmail(user.email, 2, user._id, businessDetails);
+        }
+    } catch (error) {
+        console.error('Error in follow-up cron job:', error);
+    }
+});
+
+app.get('/tracking-data', async (req, res) => {
+  try {
+    // Fetch tracking data from MongoDB
+    const trackingData = await TrackingEvent.find();
+
+    // Read the EJS template file
+    const templatePath = path.join(__dirname, 'templates', 'trackingData.ejs');
+    const templateContent = fs.readFileSync(templatePath, 'utf-8');
+
+    // Render the EJS template with tracking data
+    const renderedHtml = ejs.render(templateContent, { trackingData });
+
+    // Respond with the rendered HTML
+    res.send(renderedHtml);
+  } catch (error) {
+    console.error('Error rendering tracking data:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+
+// Modify your existing tracking endpoint
+app.get('/track.gif', async (req, res) => {
+  try {
+    const { email, action, emailTitle } = req.query;
+   console.log('inside gif tracking')
+    // Log the email open or click event to MongoDB
+    const trackingEvent = new TrackingEvent({ email, action, emailTitle });
+    await trackingEvent.save();
+
+    // Respond with the 1x1 transparent pixel
+    res.sendFile(path.join(__dirname, 'public', 'track.gif'));
+  } catch (error) {
+    console.error('Error tracking event:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
 
 // Endpoint to save email and return client ID
 app.post('/save-email', async (req, res) => {
@@ -49,7 +158,7 @@ app.post('/save-email', async (req, res) => {
     console.log('email',email)
 
     // Save the email to the client collection
-    const newClient = new Client({ email });
+    const newClient = new Client({ email,hasPaid:false });
     console.log('newClient:', newClient);
 
     const savedClient = await newClient.save();
@@ -94,7 +203,7 @@ app.post('/save-business/', async (req, res) => {
 
 
 app.post('/create-payment-intent', async (req, res) => {
-  const { amount, currency, description, payment_method } = req.body;
+  const { amount, currency, description, payment_method,clientId } = req.body;
 
   console.log('Received request payload:', req.body);
 
@@ -109,6 +218,31 @@ app.post('/create-payment-intent', async (req, res) => {
       return_url: 'https://tanamtech.online', // Replace with your success page URL
 
     });
+
+     // Update the user collection with payment status
+    const updatedClient = await Client.findByIdAndUpdate(
+      clientId,
+      { $set: { hasPaid: true } },
+      { new: true }
+    );
+
+    // Now you can use the EmailService to send the order confirmation email
+    const orderEmail = updatedClient.email;
+    console.log('update client id',updatedClient.businessId)
+  const businessDetails = await Business.findOne({ _id: updatedClient.businessId });
+
+      console.log('update client id',businessDetails)
+
+
+const orderDetails = {
+  name: businessDetails.name,
+  state: businessDetails.state,
+  description: businessDetails.description,
+  newsPub: businessDetails.newsPub || 'N/A',
+  totalFees: businessDetails.totalFees,
+  llcMembers: businessDetails.llcMembers || [],
+};
+   EmailService.sendOrderConfirmation(orderEmail, orderDetails);
 
     // Send the client secret to the client
     res.json({ clientSecret: paymentIntent.client_secret });

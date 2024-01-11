@@ -29,7 +29,7 @@ const businessSchema = new mongoose.Schema({
       dateOfBirth: String,
     }
   ],
-});
+},{ timestamps: true });
 
 const Business = mongoose.model('Business', businessSchema);
 

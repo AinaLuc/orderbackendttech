@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmation</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        main {
+            margin: 2rem;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        footer {
+            margin-top: 2rem;
+            text-align: center;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Order Confirmation - Tanamtech LTD</h1>
+    </header>
+
+    <main>
+        <p>Dear <%= orderDetails.businessName %> Team,</p>
+
+        <p>Thank you for your order! Below are the details:</p>
+
+        <ul>
+            <li>Business Name: <%= orderDetails.name %></li>
+            <li>State: <%= orderDetails.state %></li>
+            <li>Description: <%= orderDetails.description %></li>
+            <li>News Publication: <%= orderDetails.newsPub %></li>
+            <li>Total Fees: $<%= orderDetails.totalFees %></li>
+            <li>LLC Members:</li>
+            <ul>
+                <% orderDetails.llcMembers.forEach(member => { %>
+                    <li>
+                        <%= member.firstName %> <%= member.lastName %>
+                        <br>
+                        Address: <%= member.address %>
+                        <br>
+                        Date of Birth: <%= member.dateOfBirth %>
+                    </li>
+                <% }); %>
+            </ul>
+        </ul>
+
+        <p>Thank you for choosing Tanamtech LTD services!</p>
+    </main>
+
+    <footer>
+        <p>Best Regards,</p>
+        <p>Tanamtech LTD</p>
+    </footer>
+</body>
+</html>
