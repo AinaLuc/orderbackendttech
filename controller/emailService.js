@@ -13,7 +13,7 @@ class EmailService {
       const templateContent = await ejs.renderFile(templatePath, { orderDetails });
 
       const message = {
-        senderAddress: "lucien@brandeoai.us",
+        senderAddress: "info@tanamtech.online",
         content: {
           subject: "Order Confirmation",
           html: templateContent,
@@ -50,7 +50,7 @@ class EmailService {
       const templateContent = await ejs.renderFile(templatePath, { clientId,email });
 
       const message = {
-        senderAddress: "lucien@brandeoai.us",
+        senderAddress: "info@tanamtech.online",
         content: {
           subject: "Reminder",
           html: templateContent,
@@ -85,7 +85,7 @@ static async sendFollowUpEmail(email, daysAfter, clientId, businessDetails) {
         });
 
         const message = {
-            senderAddress: "lucien@brandeoai.us",
+            senderAddress: "info@tanamtech.online",
             content: {
                 subject: "Follow-up Email",
                 html: templateContent,
