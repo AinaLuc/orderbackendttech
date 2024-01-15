@@ -24,7 +24,6 @@ const EmailService = require('./emailService');
 const mongoose = require('mongoose');
 require('dotenv').config();
 
-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
 
 
 
