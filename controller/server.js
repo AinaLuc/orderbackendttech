@@ -107,6 +107,8 @@ cron.schedule('*/10 * * * *', async () => {
         for (const user of usersToFollowUp) {
             const businessDetails = await Business.findOne({ _id: user.businessId });
             await EmailService.sendFollowUpEmail(user.email, 2, user._id, businessDetails);
+                  await Client.findByIdAndUpdate(user._id, { $set: { secondEmail: true } });
+
         }
     } catch (error) {
         console.error('Error in follow-up cron job:', error);
