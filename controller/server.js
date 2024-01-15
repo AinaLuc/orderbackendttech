@@ -18,7 +18,7 @@ const Business = require('./models/business');
 const TrackingEvent = require('./models/trackingEvent');
 
 const cors = require('cors');
-const stripe = require('stripe')('sk_test_51MnMGrE1uOh1UBiwR33jjaAaUJGqPep8bZdYY90kGojhcxLowwgG5PJ7DuvHMHLPLrhO5kIafevZ99pvVQqBowfa00ikam1umE');
+const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const EmailService = require('./emailService');
 
 const mongoose = require('mongoose');
@@ -246,9 +246,9 @@ const orderDetails = {
     // Send the client secret to the client
     res.json({ clientSecret: paymentIntent.client_secret });
   } catch (error) {
-    //console.error('Error creating payment intent:', error);
+    console.error('Error creating payment intent:', error);
      // Check if it's a StripeCardError
-          console.log('error typ',error.type)
+          console.log('error typ'error.type)
 
     if (error.type === 'StripeCardError') {
 
