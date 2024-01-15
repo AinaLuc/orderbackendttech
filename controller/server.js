@@ -101,6 +101,9 @@ cron.schedule('*/10 * * * *', async () => {
             createdAt: { $lt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000) },
         });
 
+            console.log('Users to follow up:', usersToFollowUp);
+
+
         for (const user of usersToFollowUp) {
             const businessDetails = await Business.findOne({ _id: user.businessId });
             await EmailService.sendFollowUpEmail(user.email, 2, user._id, businessDetails);
