@@ -24,7 +24,7 @@ const EmailService = require('./emailService');
 const mongoose = require('mongoose');
 require('dotenv').config();
 
-
+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
 
 
 
@@ -247,8 +247,17 @@ const orderDetails = {
     // Send the client secret to the client
     res.json({ clientSecret: paymentIntent.client_secret });
   } catch (error) {
-    console.error('Error creating payment intent:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    //console.error('Error creating payment intent:', error);
+     // Check if it's a StripeCardError
+          console.log('error typ',error.type)
+
+    if (error.type === 'StripeCardError') {
+
+      console.log(error.type)
+      res.status(400).json({ error: error.raw.decline_code || 'Card declined' });
+    } else {
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
   }
 });
 app.listen(port, () => {
