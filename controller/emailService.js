@@ -78,8 +78,7 @@ static async sendFollowUpEmail(email, daysAfter, clientId, businessDetails) {
     try {
         const templatePath = path.join(__dirname, 'templates', 'followUpEmail.ejs');
         const templateContent = await ejs.renderFile(templatePath, {
-            daysAfter,
-            totalFees: businessDetails.totalFees,  // Assuming totalFees is a property of businessDetails
+            // Assuming totalFees is a property of businessDetails
             clientId,
             email,
         });
