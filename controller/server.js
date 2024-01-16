@@ -70,6 +70,7 @@ cron.schedule('*/5 * * * *', async () => {
       businessId: { $exists: false },
       firstEmail: { $exists: false }, // Users who haven't received the first email
 
+
       //send email after 24 hours
       createdAt: { $lt: new Date(Date.now() - 24 * 60 * 60 * 1000) },
 
@@ -98,6 +99,7 @@ cron.schedule('*/10 * * * *', async () => {
         const usersToFollowUp = await Client.find({
             hasPaid: false,
             firstEmail: { $exists: true },
+            secondEmail: {$exists:false},
             createdAt: { $lt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000) },
         });
 
