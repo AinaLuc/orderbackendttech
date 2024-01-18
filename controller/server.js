@@ -209,7 +209,7 @@ app.post('/save-business/', async (req, res) => {
 
 
 app.post('/create-payment-intent', async (req, res) => {
-  const { amount, currency, description, payment_method,clientId } = req.body;
+  const { amount, currency, description, payment_method, clientId } = req.body;
 
   console.log('Received request payload:', req.body);
 
@@ -222,10 +222,9 @@ app.post('/create-payment-intent', async (req, res) => {
       confirmation_method: 'manual',
       confirm: true,
       return_url: 'https://tanamtech.online', // Replace with your success page URL
-
     });
 
-     // Update the user collection with payment status
+    // Update the user collection with payment status
     const updatedClient = await Client.findByIdAndUpdate(
       clientId,
       { $set: { hasPaid: true } },
@@ -234,38 +233,38 @@ app.post('/create-payment-intent', async (req, res) => {
 
     // Now you can use the EmailService to send the order confirmation email
     const orderEmail = updatedClient.email;
-    console.log('update client id',updatedClient.businessId)
-  const businessDetails = await Business.findOne({ _id: updatedClient.businessId });
+    const businessDetails = await Business.findOne({ _id: updatedClient.businessId });
 
-      console.log('update client id',businessDetails)
+    const orderDetails = {
+      name: businessDetails.name,
+      state: businessDetails.state,
+      description: businessDetails.description,
+      newsPub: businessDetails.newsPub || 'N/A',
+      totalFees: businessDetails.totalFees,
+      llcMembers: businessDetails.llcMembers || [],
+    };
 
-
-const orderDetails = {
-  name: businessDetails.name,
-  state: businessDetails.state,
-  description: businessDetails.description,
-  newsPub: businessDetails.newsPub || 'N/A',
-  totalFees: businessDetails.totalFees,
-  llcMembers: businessDetails.llcMembers || [],
-};
-   EmailService.sendOrderConfirmation(orderEmail, orderDetails);
+    EmailService.sendOrderConfirmation(orderEmail, orderDetails);
 
     // Send the client secret to the client
     res.json({ clientSecret: paymentIntent.client_secret });
   } catch (error) {
     console.error('Error creating payment intent:', error);
-     // Check if it's a StripeCardError
-          console.log('error typ'error.type)
+
+    // Check if it's a StripeCardError
+    console.log('error type', error.type);
 
     if (error.type === 'StripeCardError') {
-
-      console.log(error.type)
+      console.log(error.type);
+      // Send specific card decline code or a generic message
       res.status(400).json({ error: error.raw.decline_code || 'Card declined' });
     } else {
+      // Send a generic error message
       res.status(500).json({ error: 'Internal Server Error' });
     }
   }
 });
+
 app.listen(port, () => {
   console.log(`Backend server listening at http://localhost:${port}`);
 });
