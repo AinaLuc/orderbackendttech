@@ -210,12 +210,13 @@ app.post('/save-business/', async (req, res) => {
 
 app.post('/create-payment-intent', async (req, res) => {
   const { amount, currency, description, payment_method, clientId } = req.body;
+    const numericAmount = parseInt(amount, 10);
 
   console.log('Received request payload:', req.body);
 
   try {
     const paymentIntent = await stripe.paymentIntents.create({
-      amount,
+      mount: numericAmount,
       currency,
       description,
       payment_method,
